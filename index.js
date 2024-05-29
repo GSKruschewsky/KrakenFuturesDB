@@ -29,7 +29,7 @@ const reconn_delay = 15e3;
 const book_resync_time = 5*60e3; // 5 min
 const max_snapshot_depth = 500;
 const to_save_depth = is_test ? 5 : 50;
-const seconds_to_export = 10;
+const seconds_to_export = 3600;
 const num_of_connections = 3;
 
 let connections = [];

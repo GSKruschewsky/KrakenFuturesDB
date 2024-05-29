@@ -40,7 +40,6 @@ async function CompressAndSendBigJSONToS3 (name, bigjson) {
 }
 
 const Market = "PF_" + [ base, quote ].join('');
-const full_market_name =  `kraken-futures ${base}-${quote}`;
 const no_delay_attemps = 3;
 const reconn_delay = 15e3;
 const book_resync_time = 5*60e3; // 5 min
@@ -56,6 +55,12 @@ const dict = {
   bside: { 'buy': 'bids', 'sell': 'asks' },
   bcmp: { 'buy': 'gte', 'sell': 'lte' }
 }
+
+const asset_translation = {
+  "XBT": "BTC",
+  "XDG": "DOGE"
+};
+const full_market_name =  `kraken-futures ${ (asset_translation[base] || base) }-${ ( asset_translation[quote] || quote) }`;
 
 let data_time = null;
 let seconds_data = [];

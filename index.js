@@ -23,22 +23,6 @@ const client = new S3Client({
   }
 });
 
-async function CompressAndSendBigJSONToS3 (name, bigjson) {
-  const compress_stream = zlib.createGzip();
-  new JsonStreamStringify(bigjson).pipe(compress_stream);
-
-  const upload = new Upload({
-    client,
-    params: {
-      Bucket: process.env['AWS-S3_BUCKET_NAME'],
-      Key: name+'.gz',
-      Body: compress_stream,
-    }
-  });
-
-  await upload.done();
-}
-
 const Market = "PF_" + [ base, quote ].join('');
 const no_delay_attemps = 3;
 const reconn_delay = 15e3;
@@ -64,6 +48,31 @@ const full_market_name =  `kraken-futures ${ (asset_translation[base] || base) }
 
 let data_time = null;
 let seconds_data = [];
+
+// 'console.log' start printing the current time (UTC-3).
+let dlog = console.log;
+console.dlog = dlog;
+console.log = (...args) => {
+  const ts = Date.now()-60e3*60*3;
+  const strtime = new Date(ts).toLocaleString('pt-BR', { timeZone: 'UTC' }).replace(',', '') + '.' + (ts%1e3+'').padStart(3, 0);
+  return dlog(...[ strtime, '-', ...args ]);
+}
+
+async function CompressAndSendBigJSONToS3 (name, bigjson) {
+  const compress_stream = zlib.createGzip();
+  new JsonStreamStringify(bigjson).pipe(compress_stream);
+
+  const upload = new Upload({
+    client,
+    params: {
+      Bucket: process.env['AWS-S3_BUCKET_NAME'],
+      Key: name+'.gz',
+      Body: compress_stream,
+    }
+  });
+
+  await upload.done();
+}
 
 async function Request (path) {
   const r = await fetch('https://futures.kraken.com' + path);

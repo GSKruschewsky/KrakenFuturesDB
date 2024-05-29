@@ -82,6 +82,9 @@ async function ValidateMarket () {
 
 function NewUpdateSec (conn, update_time, update_sec) {
   if (data_time == null) data_time = update_sec - 1;
+  
+  if (!is_test)
+    console.log('[!] New second, book_sec ('+Math.floor(this.orderbook.timestamp / 1e3)+') upd_sec ('+update_sec+') { '+((Date.now() - update_time) / 1e3).toFixed(3)+' sec delay }');
 
   while (data_time < update_sec) {
     const obj = {

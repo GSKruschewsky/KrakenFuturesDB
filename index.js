@@ -260,8 +260,23 @@ class Connection {
 
         if (Big(this.orderbook.asks[0][0]).lte(this.orderbook.bids[0][0])) {
           // Resync orderbook.
-          console.log('[E] wrong book, best ask lower than or equal best bid.');
-          process.exit(1);
+          console.log('[E] (' + this.conn_id + ') wrong book, best ask lower than or equal best bid:');
+
+          console.log('\n',this.orderbook.asks.slice(0, 10).reverse().map(([p, q]) => p + '\t' + q).join('\n'),'\n');
+          console.log(this.orderbook.bids.slice(0, 10).map(([p, q]) => p + '\t' + q).join('\n'),'  \n \n');
+
+          console.log('Last update message processed:',msg);
+
+          // process.exit(1);
+          console.log('/!\\ (' + this.conn_id + ') Resyncing orderbook...');
+          this.orderbook = null;
+          ws.send(JSON.stringify({
+            event: "subscribe",
+            feed: "book",
+            product_ids: [ Market ]
+          }));
+
+          return;
         }
 
         this.orderbook.seq = seq;

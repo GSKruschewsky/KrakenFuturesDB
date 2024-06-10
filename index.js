@@ -216,6 +216,8 @@ class Connection {
       }
 
       if (msg.feed === 'book') {
+        if (this.orderbook == null) return;
+
         const seq = parseInt(msg.seq);
         if (seq != this.orderbook.seq + 1) {
           // Resync orderbook.
@@ -262,8 +264,8 @@ class Connection {
           // Resync orderbook.
           console.log('[E] (' + this.conn_id + ') wrong book, best ask lower than or equal best bid:');
 
-          console.log('\n',this.orderbook.asks.slice(0, 10).reverse().map(([p, q]) => p + '\t' + q).join('\n'),'\n');
-          console.log(this.orderbook.bids.slice(0, 10).map(([p, q]) => p + '\t' + q).join('\n'),'  \n \n');
+          dlog(' \n' + this.orderbook.asks.slice(0, 10).reverse().map(([p, q]) => p + '\t' + q).join('\n'),' \n');
+          dlog(this.orderbook.bids.slice(0, 10).map(([p, q]) => p + '\t' + q).join('\n'),' \n \n');
 
           console.log('Last update message processed:',msg);
 

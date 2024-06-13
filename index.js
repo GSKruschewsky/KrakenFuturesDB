@@ -112,13 +112,14 @@ function NewUpdateSec (conn, update_time, update_sec) {
       ),
     };
     
-    if (is_test)
+    if (is_test) {
       console.log(obj);
-    else
+    } else {
       seconds_data.push(obj);
+      if (data_time % seconds_to_export == 0) SaveToS3();
+    }
   }
 
-  if (data_time % seconds_to_export == 0) SaveToS3();
 }
 
 async function SaveToS3 () {
@@ -230,7 +231,7 @@ class Connection {
         const book_sec = Math.floor(this.orderbook.timestamp / 1e3);
 
         // Check if is a new second.
-        if (update_sec > book_sec && (data_time == null || update_sec > data_time))
+        if (this.trades != null && update_sec > book_sec && (data_time == null || update_sec > data_time))
           NewUpdateSec(this, update_time, update_sec);
 
         const bside = dict.bside[msg.side];
